@@ -1,10 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
 <body>
-    <h2>Enter seed track to generate playlist:</h2>
-    <form action="." method="POST">
-        <input type="text" name="text">
-        <input type="submit" name="my-form" value="Send">
+	<link href="https://fonts.googleapis.com/css?family=Patua+One|Share+Tech+Mono" rel="stylesheet">
+	<script>document.body.style.backgroundColor = "#7cff96";</script>
+	<style type="text/css">
+		body {
+			background-color: #7cff96;
+	    	background:url(https://i.imgsafe.org/fd16dbb6b5.png) fixed no-repeat top right;
+	    	background-size: 600px 600px;
+		}
+	</style>
+    <h2 align="center" style="font-family: 'Patua One'">Enter seed artist to generate playlist:</h2>
+    <form action="." method="POST" align="center">
+        <input type="text" name="text" id="autocomplete">
+        <input type="submit" id="track_submit_button" name="my-form" value="Send">
     </form>
+
+    <p id="loadingMsg" align="center" style="font-family: 'Patua One'">Gathering last.fm listening history (this may take a while)...</p>
+    <center><img id="loadingGif" align="center" src="https://i.imgsafe.org/0045f8325e.gif"></center>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script>
+    	function getStatus(){
+    		done = 0;
+        	var username = window.location.pathname.split('/')[2];
+        	var jsonData = {'user': username};
+            $.ajax({
+	            url: '/getstatus/',
+	            type: 'POST',
+	            data: JSON.stringify(jsonData, null, '\t'),
+	            contentType: 'application/json;charset=UTF-8',
+	            success: function(data, status, request) {
+	                //status_url = request.getResponseHeader('Location');
+	                //update_progress(status_url);
+	                if(data.done == 'T'){
+	                	done = 1;
+	                	document.getElementById('track_submit_button').disabled = false;
+	                	document.getElementById('autocomplete').disabled = false;
+	                	document.getElementById("loadingMsg").style.visibility = "hidden";
+	                	document.getElementById("loadingGif").style.visibility = "hidden";
+	                }else{
+	                	setTimeout(function() {
+                			getStatus();
+            			}, 10000);
+	                }
+	            },
+	            error: function() {
+	                alert('Unexpected error');
+	            }
+        	});
+    	}
+        // wait for the DOM to be loaded 
+        $(document).ready(function() {
+        	document.body.style.backgroundColor = "#7cff96";
+        	document.getElementById('track_submit_button').disabled = 'disabled';
+        	document.getElementById('autocomplete').disabled = 'disabled';
+        	getStatus();
+        }); 
+    </script>
+
+	<link href="//code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" rel="Stylesheet"></link>
+	<script src="//code.jquery.com/jquery-2.2.0.min.js"></script>
+	<script src="//code.jquery.com/ui/1.10.2/jquery-ui.js" ></script>
+
+	<script type="text/javascript">
+	$(function() {
+		var username = window.location.pathname.split('/')[2];
+	    $("#autocomplete").autocomplete({
+	        source:function(request, response) {
+	            $.getJSON("{{url_for('autocomplete')}}",{
+	                q: username+";"+request.term, // in flask, "q" will be the argument to look for using request.args
+	            }, function(data) {
+	                response(data.matching_results); // matching_results from jsonify
+	            });
+	        },
+	        minLength: 2,
+	        select: function(event, ui) {
+	            console.log(ui.item.value); // not in your question, but might help later
+	        }
+	    });
+	})
+
+	</script>
+<!--
+	<div align="center">
+        <input name="autocomplete" type="text" id="autocomplete" class="form-control input-lg"/>
+    </div>-->
 </body>
+
 </html>

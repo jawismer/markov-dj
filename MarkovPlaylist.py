@@ -1,12 +1,7 @@
-#import spotapi
-#import lastapi
 import urllib2
 import time
 import json
 import random
-
-#userName = 'jwismer1011'
-
 
 
 def createMarkovChain(userName):
@@ -49,7 +44,7 @@ def createMarkovChain(userName):
 		else:
 			#print track['artist']['#text']+", "+track['date']['#text']
 			prevUTS = track['date']['uts']
-	print "page: 1"
+	#print "page: 1"
 
 	numPages = jsonResponse['recenttracks']['@attr']['totalPages']
 	i = 2
@@ -77,7 +72,7 @@ def createMarkovChain(userName):
 					probMatrix[track['artist']['#text']] = {}
 			prevUTS = track['date']['uts']
 			#print track['artist']['#text']+", "+track['name']
-		print "page: "+str(i)
+		#print "page: "+str(i)
 		i = i + 1 
 
 	# separate into smaller lists with time difference between artists less than 90 minutes 
@@ -109,25 +104,22 @@ def createMarkovChain(userName):
 				probMatrix[mList[i]][mList[i+1]] = probMatrix[mList[i]][mList[i+1]] + 1
 
 	#print probMatrix
-	#return {'probMatrix': probMatrix, 'artistTrackLists': artistTrackLists}
+	return {'probMatrix': probMatrix, 'artistTrackLists': artistTrackLists}
 
 
 
+#enter seed track, generate new playlist
 
+# todo: go to next artist based on generated probabilities
+# next track probability = probMatrix[currentArtist][nextArtist] / sum of all values in probMatrix[currentArtist]
+# select random track of nextArtist from last plays
 
-
-	#enter seed track, generate new playlist
-
-	# todo: go to next artist based on generated probabilities
-	# next track probability = probMatrix[currentArtist][nextArtist] / sum of all values in probMatrix[currentArtist]
-	# select random track of nextArtist from last plays
-
-def createPlaylist(probMatrix, artistTrackLists, seedArtist):
-
+def createPlaylist(probMatrix, artistTrackLists, trackID):
 	seedArtist = trackID # add user input for seed track
 	done = False
 	current = seedArtist
 	playlistStrings = []
+	songCount = 0
 	while(done != True):
 		time.sleep(0.1)
 		if not artistTrackLists[current]:
@@ -149,6 +141,5 @@ def createPlaylist(probMatrix, artistTrackLists, seedArtist):
 					if rand <= total:
 						current = key
 						break
-
 	#retString = '\n'.join(playlistStrings)
 	return playlistStrings

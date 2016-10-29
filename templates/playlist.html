@@ -1,9 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <body>
-    <h1>Playlist:</h1>
+	<link href="https://fonts.googleapis.com/css?family=Patua+One|Share+Tech+Mono" rel="stylesheet">
+	<script>document.body.style.backgroundColor = "#7cff96";</script>
+    <style type="text/css">
+        body {
+            background-color: #7cff96;
+            background:url(https://i.imgsafe.org/fd16dbb6b5.png) fixed no-repeat top right;
+            background-size: 600px 600px;
+        }
+    </style>
+    <h1 align="center" style="font-family: 'Patua One'">Playlist:</h1>
 	{% for item in testList %}
-    	<p>{{ item }}</p>
+    	<p align="center" style="font-family: 'Share Tech Mono', monospace">{{ item }}</p>
 	{% endfor %}
+	<center><button id="exportButton" align="center">Export playlist to Spotify</button></center>
 </body>
 </html>
